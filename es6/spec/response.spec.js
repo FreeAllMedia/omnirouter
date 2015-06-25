@@ -1,9 +1,9 @@
 let sinon = require("sinon");
 
-import Router from "../router.js";
-import Response from "../response.js";
+import Router from "../lib/router.js";
+import Response from "../lib/response.js";
 
-import Request from "../../request/request.js";
+import Request from "appeal";
 
 describe("Response(expressResponse)", () => {
 	let response,
@@ -277,7 +277,7 @@ describe("Response(expressResponse)", () => {
 		describe("(dynamic functions)", () => {
 			//camel cased names from the w3c specification names
 			//http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-			let statuses = require("../http.statuses.json");
+			let statuses = require("../lib/http.statuses.json");
 
 			statuses.forEach((status) => {
 				it(`should load the ${status.name} status as a member into the response`, () => {

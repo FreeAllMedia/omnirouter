@@ -1,15 +1,17 @@
 {
 	"source": {
+		"resources": "./es6/lib/**/*.json",
 		"lib": "./es6/lib/**/*.js",
 		"spec": "./es6/spec/**/*.spec.js"
 	},
 
 	"build": {
 		"directories": {
+			"resources": "./es5/lib",
 			"lib": "./es5/lib",
 			"spec": "./es5/spec"
 		},
-		"lib": "./es5/lib/**/*.js",
+		"lib": "./es5/lib/**/*.{js,json}",
 		"spec": "./es5/spec/**/*.spec.js"
 	}
 }

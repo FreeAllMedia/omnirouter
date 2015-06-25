@@ -1,12 +1,41 @@
 # Omnirouter.js [![npm version](https://img.shields.io/npm/v/omnirouter.svg)](https://www.npmjs.com/package/omnirouter) [![license type](https://img.shields.io/npm/l/omnirouter.svg)](https://github.com/FreeAllMedia/omnirouter.git/blob/master/LICENSE) [![npm downloads](https://img.shields.io/npm/dm/omnirouter.svg)](https://www.npmjs.com/package/omnirouter) ![ECMAScript 6](https://img.shields.io/badge/ECMAScript-6-red.svg)
 
-ES6 Component for message routing.
+ES6 Component for message routing with middleware support for formatters and other stuff, and built-in message body parsing features. It also provides a semantic self-documented response. Look at this:
 
 ```javascript
-import Omnirouter from "omnirouter";
+import Router from "omnirouter";
+import JsonApiFormatter from "jsonapi-formatter";
 
-const omnirouter = new Omnirouter;
-omnirouter.saySomething(); // will output "Something"
+class UserRouter extends Router {
+	initialize(...options) {
+		/* Entity Controller Routes */
+		const entityController = new ItemController();
+		this.get('/entity/:id', (request, response) => {
+			response.ok({success: true});
+		});
+		this.post('/entity', (request, response) => {
+			response.created(new Error("please don't do that"));
+		});
+		this.put('/entity/:id', (request, response) => {
+			response.unauthorized(new Error("No way you can do that"));
+		});
+		this.delete('/entity/:id', (request, response) => {
+			response.noContent();
+		});
+		this.get('/entities', (request, response) => {
+			response.notImplemented();
+		});
+	}
+}
+
+let router = new ContentServerRouter();
+router.use(JsonApiFormatter); //example json api middleware
+router.listen(portNumber, (error,) => {
+	//do something
+	router.close(() => {
+		//bye bye router
+	});
+});
 ```
 
 # Quality and Compatibility
@@ -56,10 +85,102 @@ define(["require"] , function (require) {
 ```
 
 # Getting Started
+Omnirouter gives you by default a base Router class, but it also uses two other classes Request and Response.
+The Request is a representation of the message received by the transport and the Response is the representation to be sent back to the transport.
+You can attach middleware to Omnirouter and it has some functionality already built in like body parsing features.
+The middleware can be for example a http://jsonapi.org/format like formatter for responses. There is a package for that provided on https://github.com/FreeAllMedia/jsonapi-formatter
 
-## More insights
+## Using omnirouter
+Usually you extend the Router and put some route initialization stuff on it.
 
-In order to say something, you should know that `omnirouter()` ... (add your test here)
+```javascript
+import Router from "omnirouter";
+import JsonApiFormatter from "jsonapi-formatter";
+
+class UserRouter extends Router {
+	initialize(...options) {
+		/* Entity Controller Routes */
+		const entityController = new ItemController();
+		this.get('/entity/:id', (request, response) => {
+			response.ok({success: true});
+		});
+		this.post('/entity', (request, response) => {
+			response.created(new Error("please don't do that"));
+		});
+		this.put('/entity/:id', (request, response) => {
+			response.unauthorized(new Error("No way you can do that"));
+		});
+		this.delete('/entity/:id', (request, response) => {
+			response.noContent();
+		});
+		this.get('/entities', (request, response) => {
+			response.notImplemented();
+		});
+	}
+}
+```
+And after that you may want to start listening on some port.
+
+```javascript
+let router = new ContentServerRouter();
+router.use(JsonApiFormatter); //example json api middleware
+router.listen(portNumber, (error,) => {
+	//do something
+	router.close(() => {
+		//bye bye router
+	});
+});
+```
+
+### Router object
+The Router object provides the following methods:
+#### get(path, callback)
+#### post(path, callback)
+#### put(path, callback)
+#### delete(path, callback)
+This transport verb methods are useful to define routes. It receives the <path> which is a string according to the express docs, and a <callback> which is a handler that will receive the Omnirouter's request and response objects.
+
+#### use(middlewareClass)
+With this method you define middleware classes to be used on some scenarios.
+
+#### listen(portNumber, callback<error>)
+With this method the router will lift a server on the specified <portNumber> and will call the specified <callback> with the error if there was one according to the express docs.
+
+#### close(callback<error>)
+Close will stop the server from listening on that port using the callback as usual.
+
+### Request object
+The Request object is the first argument on your handler function and it contains the following properties and methods:
+#### body
+This property returns the request body is there is any.
+#### params
+This property returns the params received in the request according to express docs.
+#### header(name)
+This method will return the value for the specified header <name>.
+
+### Response object
+The Response object is the second argument provided on route handlers. It provides some useful properties and methods:
+#### end
+Calls the express's end.
+#### status
+Sets the response status. Calls the express's status.
+#### json
+Calls the express's response.json.
+#### send
+Calls the express's response.send.
+#### download
+Calls the express's response.download.
+#### set
+Calls the express's response.set.
+#### get
+Calls the express's response.get.
+
+And also all this methods returns the appropiate http status in a self-documented way according to the [HTTP Status RFC](http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).
+#### ok(data)
+#### internalServerError(data)
+#### forbidden(data)
+#### unauthorized(data)
+...and that infinte list.
 
 # How to Contribute
 

@@ -14,7 +14,20 @@
     "omnirouter"
   ],
   "author": "Free All Media",
-  "contributors": [],
+  "contributors": [
+    {
+      "name": "nicosommi",
+      "email": "nicosommi@gmail.com"
+    },
+    {
+      "name": "dcrockwell",
+      "email": "dcautomates@gmail.com"
+    },
+    {
+      "name": "paulgoggin",
+      "email": "pgoggin@gmail.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/FreeAllMedia/omnirouter/issues"
@@ -25,6 +38,7 @@
     "express": "^4.13.0"
   },
   "devDependencies": {
+    "appeal": "0.0.0",
     "babel": "^5.5.6",
     "chai": "^3.0.0",
     "coveralls": "^2.11.2",
@@ -35,9 +49,10 @@
     "karma": "^0.12.36",
     "karma-browserify": "^4.2.1",
     "karma-chai": "^0.1.0",
+    "karma-detect-browsers": "^2.0.0",
     "karma-mocha": "^0.1.10",
     "karma-sauce-launcher": "^0.2.11",
-    "karma-detect-browsers": "^2.0.0",
-    "mocha": "^2.2.5"
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.3"
   }
 }

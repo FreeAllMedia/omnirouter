@@ -3,9 +3,9 @@ let sinon = require("sinon");
 import Router, {Request} from "../lib/router.js";
 import Response from "../lib/response.js";
 
-import HttpRequest from "../../request/request.js";
+import HttpRequest from "appeal";
 
-import JsonApiFormatter from "../../jsonapi-formatter";
+import JsonApiFormatter from "jsonapi-formatter";
 
 describe("Router(...options)", () => {
 	let router,
@@ -418,7 +418,7 @@ describe("Router(...options)", () => {
 			it("should push every semanthic method through the formater middleware", () => {
 				//camel cased names from the w3c specification names
 				//http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-				let statuses = require("../http.statuses.json");
+				let statuses = require("../lib/http.statuses.json");
 				describe("(jsonapi-formatter middleware)", () => {
 					statuses.forEach((status) => {
 						describe(`response.${status.name}()`, () => {

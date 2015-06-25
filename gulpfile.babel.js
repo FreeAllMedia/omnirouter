@@ -1,3 +1,4 @@
+import "./tasks/build-resources.js";
 import "./tasks/build-spec.js";
 import "./tasks/build-lib.js";
 import "./tasks/build.js";
