@@ -35,7 +35,8 @@
   "homepage": "https://github.com/FreeAllMedia/omnirouter",
   "dependencies": {
     "body-parser": "^1.13.1",
-    "express": "^4.13.0"
+    "express": "^4.13.0",
+    "jsonapi-formatter": "^0.1.0"
   },
   "devDependencies": {
     "appeal": "0.0.0",
