@@ -69,18 +69,18 @@ npm install omnirouter --save
 
 ```
 // ES6
-import omnirouter from "omnirouter";
+import Router from "omnirouter";
 ```
 
 ```
 // ES5
-var omnirouter = require("omnirouter");
+var Router = require("omnirouter");
 ```
 
 ```
 // Require.js
 define(["require"] , function (require) {
-    var omnirouter = require("omnirouter");
+    var Router = require("omnirouter");
 });
 ```
 
