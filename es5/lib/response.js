@@ -33,7 +33,7 @@ var Response = (function () {
 		value: function value() {
 			var _this = this;
 
-			var statuses = require("./http.statuses.json");
+			var statuses = require("../../http.statuses.json");
 			if (Array.isArray(statuses)) {
 				statuses.forEach(function (status) {
 					_this[status.name] = function (data) {

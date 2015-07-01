@@ -17,7 +17,7 @@ export default class Response {
 	}
 
 	[loadDynamicMethods]() {
-		const statuses = require("./http.statuses.json");
+		const statuses = require("../../http.statuses.json");
 		if(Array.isArray(statuses)) {
 			statuses.forEach((status) => {
 				this[status.name] = (data) => {
