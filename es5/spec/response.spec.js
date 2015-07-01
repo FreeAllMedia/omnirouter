@@ -280,7 +280,7 @@ describe("Response(expressResponse)", function () {
 		describe("(dynamic functions)", function () {
 			//camel cased names from the w3c specification names
 			//http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-			var statuses = require("../lib/http.statuses.json");
+			var statuses = require("../../http.statuses.json");
 
 			statuses.forEach(function (status) {
 				it("should load the " + status.name + " status as a member into the response", function () {

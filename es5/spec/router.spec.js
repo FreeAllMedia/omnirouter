@@ -418,7 +418,7 @@ describe("Router(...options)", function () {
 			it("should push every semanthic method through the formater middleware", function () {
 				//camel cased names from the w3c specification names
 				//http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-				var statuses = require("../lib/http.statuses.json");
+				var statuses = require("../../http.statuses.json");
 				describe("(jsonapi-formatter middleware)", function () {
 					statuses.forEach(function (status) {
 						describe("response." + status.name + "()", function () {
