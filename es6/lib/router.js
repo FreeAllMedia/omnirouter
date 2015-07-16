@@ -1,10 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+import EventEmitter from "events";
 
 import Response from "./response.js";
 
 const _createRequest = Symbol(),
-	_createResponse = Symbol();
+	_createResponse = Symbol(),
+	_defineExpressRoute = Symbol();
 
 export default class Router {
 	constructor(...routerOptions) {
@@ -55,28 +57,51 @@ export default class Router {
 		return new Response(expressResponse, this._middlewares);
 	}
 
-	get(path, callback) {
-		this._express.get(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
+	[_defineExpressRoute](method, path) {
+		const route = new Route(path, this);
+		route.on("callback", (routeCallback) => {
+			this._express[method](path, (expressRequest, expressResponse) => {
+				routeCallback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
+			});
 		});
+
+		return route;
+	}
+
+	get(path, callback) {
+		const route = this[_defineExpressRoute]("get", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	post(path, callback) {
-		this._express.post(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
-		});
+		const route = this[_defineExpressRoute]("post", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	put(path, callback) {
-		this._express.put(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
-		});
+		const route = this[_defineExpressRoute]("put", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	delete(path, callback) {
-		this._express.delete(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
-		});
+		const route = this[_defineExpressRoute]("delete", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	use(middlewareClass) {
@@ -111,3 +136,20 @@ export class Request {
 	}
 }
 
+export class Route extends EventEmitter {
+	constructor(type, path, router) {
+		super();
+		this.setMaxListeners(0);
+		Object.defineProperties(this,
+			{
+				"type": {value: type},
+				"path": {value: path},
+				"router": {value: router}
+			});
+	}
+
+	then(callback) {
+		Object.defineProperty(this, "callback", {value: callback});
+		this.emit("callback", this.callback);
+	}
+}

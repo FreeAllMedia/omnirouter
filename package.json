@@ -1,6 +1,6 @@
 {
   "name": "omnirouter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ES6 Component for message routing.",
   "main": "index.js",
   "scripts": {
@@ -41,8 +41,10 @@
   "devDependencies": {
     "appeal": "0.0.0",
     "babel": "^5.5.6",
+    "babel-eslint": "^3.1.23",
     "chai": "^3.0.0",
     "coveralls": "^2.11.2",
+    "eslint": "^1.0.0-rc-1",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-istanbul": "^0.10.0",

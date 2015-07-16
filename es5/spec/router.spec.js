@@ -403,6 +403,144 @@ describe("Router(...options)", function () {
 		});
 	});
 
+	describe("(chaining)", function () {
+		describe(".get", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = sinon.spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router.get(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouterJs.Route);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"].get.url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe(".post", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = sinon.spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router.post(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouterJs.Route);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"].post.url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe(".put", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = sinon.spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router.put(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouterJs.Route);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"].put.url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe(".delete", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = sinon.spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router["delete"](path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouterJs.Route);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"]["delete"].url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+	});
+
 	describe("(middleware)", function () {
 		describe(".use(middleware)", function () {
 			var path = undefined,
