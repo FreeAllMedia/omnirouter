@@ -539,6 +539,38 @@ describe("Router(...options)", function () {
 				});
 			});
 		});
+
+		describe("(casting)", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = sinon.spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router["delete"](path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should allow to cast a parameter as a number", function (done) {
+				route.cast("id").then(function (request) {
+					request.params.id.should.be.instanceOf(Number);
+					done();
+				});
+
+				_appeal2["default"].get.url(url).results(function () {});
+			});
+		});
 	});
 
 	describe("(middleware)", function () {

@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 import EventEmitter from "events";
 
 import Response from "./response.js";
+import upcast from "upcast";
 
 const _createRequest = Symbol(),
 	_createResponse = Symbol(),
@@ -146,6 +147,10 @@ export class Route extends EventEmitter {
 				"path": {value: path},
 				"router": {value: router}
 			});
+	}
+
+	cast(parameterName) {
+		
 	}
 
 	then(callback) {

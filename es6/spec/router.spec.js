@@ -547,6 +547,40 @@ describe("Router(...options)", () => {
 					});
 			});
 		});
+
+		describe("(casting)", () => {
+			let route,
+				path,
+				url,
+				callback;
+
+			before(done => {
+				router = new Router();
+				callback = sinon.spy((request, response) => {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = `${host}${path}`;
+				route = router.delete(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(done => {
+				router.close(done);
+			});
+
+			it("should allow to cast a parameter as a number", done => {
+				route.cast("id").then((request) => {
+					request.params.id.should.be.instanceOf(Number);
+					done();
+				});
+
+				HttpRequest.get
+					.url(url)
+					.results(() => {});
+			});
+		});
 	});
 
 	describe("(middleware)", () => {
