@@ -1,6 +1,6 @@
 let sinon = require("sinon");
 
-import Router, {Request} from "../lib/router.js";
+import Router, {Request, Route} from "../lib/router.js";
 import Response from "../lib/response.js";
 
 import HttpRequest from "appeal";
@@ -400,6 +400,152 @@ describe("Router(...options)", () => {
 					callback.firstCall.args[1].should.be.instanceOf(Response);
 					done();
 				});
+		});
+	});
+
+	describe("(chaining)", () => {
+		describe(".get", () => {
+			let route,
+				path,
+				url,
+				callback;
+
+			before(done => {
+				router = new Router();
+				callback = sinon.spy((request, response) => {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = `${host}${path}`;
+				route = router.get(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(done => {
+				router.close(done);
+			});
+
+			it("should return a Route instance", () => {
+				route.should.be.instanceOf(Route);
+			});
+
+			it("should callback", done => {
+				HttpRequest.get
+					.url(url)
+					.results(() => {
+						callback.called.should.be.true;
+						done();
+					});
+			});
+		});
+
+		describe(".post", () => {
+			let route,
+				path,
+				url,
+				callback;
+
+			before(done => {
+				router = new Router();
+				callback = sinon.spy((request, response) => {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = `${host}${path}`;
+				route = router.post(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(done => {
+				router.close(done);
+			});
+
+			it("should return a Route instance", () => {
+				route.should.be.instanceOf(Route);
+			});
+
+			it("should callback", done => {
+				HttpRequest.post
+					.url(url)
+					.results(() => {
+						callback.called.should.be.true;
+						done();
+					});
+			});
+		});
+
+		describe(".put", () => {
+			let route,
+				path,
+				url,
+				callback;
+
+			before(done => {
+				router = new Router();
+				callback = sinon.spy((request, response) => {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = `${host}${path}`;
+				route = router.put(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(done => {
+				router.close(done);
+			});
+
+			it("should return a Route instance", () => {
+				route.should.be.instanceOf(Route);
+			});
+
+			it("should callback", done => {
+				HttpRequest.put
+					.url(url)
+					.results(() => {
+						callback.called.should.be.true;
+						done();
+					});
+			});
+		});
+
+		describe(".delete", () => {
+			let route,
+				path,
+				url,
+				callback;
+
+			before(done => {
+				router = new Router();
+				callback = sinon.spy((request, response) => {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = `${host}${path}`;
+				route = router.delete(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(done => {
+				router.close(done);
+			});
+
+			it("should return a Route instance", () => {
+				route.should.be.instanceOf(Route);
+			});
+
+			it("should callback", done => {
+				HttpRequest.delete
+					.url(url)
+					.results(() => {
+						callback.called.should.be.true;
+						done();
+					});
+			});
 		});
 	});
 

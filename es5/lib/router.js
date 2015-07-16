@@ -4,11 +4,19 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var _events = require("events");
+
+var _events2 = _interopRequireDefault(_events);
 
 var _responseJs = require("./response.js");
 
@@ -18,7 +26,8 @@ var express = require("express");
 var bodyParser = require("body-parser");
 
 var _createRequest = Symbol(),
-    _createResponse = Symbol();
+    _createResponse = Symbol(),
+    _defineExpressRoute = Symbol();
 
 var Router = (function () {
 	function Router() {
@@ -83,40 +92,58 @@ var Router = (function () {
 			return new _responseJs2["default"](expressResponse, this._middlewares);
 		}
 	}, {
-		key: "get",
-		value: function get(path, callback) {
+		key: _defineExpressRoute,
+		value: function value(method, path) {
 			var _this = this;
 
-			this._express.get(path, function (expressRequest, expressResponse) {
-				callback(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
+			var route = new Route(path, this);
+			route.on("callback", function (routeCallback) {
+				_this._express[method](path, function (expressRequest, expressResponse) {
+					routeCallback(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
+				});
 			});
+
+			return route;
+		}
+	}, {
+		key: "get",
+		value: function get(path, callback) {
+			var route = this[_defineExpressRoute]("get", path);
+
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "post",
 		value: function post(path, callback) {
-			var _this2 = this;
+			var route = this[_defineExpressRoute]("post", path);
 
-			this._express.post(path, function (expressRequest, expressResponse) {
-				callback(_this2[_createRequest](expressRequest), _this2[_createResponse](expressResponse));
-			});
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "put",
 		value: function put(path, callback) {
-			var _this3 = this;
+			var route = this[_defineExpressRoute]("put", path);
 
-			this._express.put(path, function (expressRequest, expressResponse) {
-				callback(_this3[_createRequest](expressRequest), _this3[_createResponse](expressResponse));
-			});
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "delete",
 		value: function _delete(path, callback) {
-			var _this4 = this;
+			var route = this[_defineExpressRoute]("delete", path);
 
-			this._express["delete"](path, function (expressRequest, expressResponse) {
-				callback(_this4[_createRequest](expressRequest), _this4[_createResponse](expressResponse));
-			});
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "use",
@@ -165,3 +192,31 @@ var Request = (function () {
 })();
 
 exports.Request = Request;
+
+var Route = (function (_EventEmitter) {
+	function Route(type, path, router) {
+		_classCallCheck(this, Route);
+
+		_get(Object.getPrototypeOf(Route.prototype), "constructor", this).call(this);
+		this.setMaxListeners(0);
+		Object.defineProperties(this, {
+			"type": { value: type },
+			"path": { value: path },
+			"router": { value: router }
+		});
+	}
+
+	_inherits(Route, _EventEmitter);
+
+	_createClass(Route, [{
+		key: "then",
+		value: function then(callback) {
+			Object.defineProperty(this, "callback", { value: callback });
+			this.emit("callback", this.callback);
+		}
+	}]);
+
+	return Route;
+})(_events2["default"]);
+
+exports.Route = Route;
