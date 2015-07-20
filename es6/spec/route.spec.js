@@ -30,7 +30,7 @@ describe("Route", () => {
       it("should show throw if there is no matching parameter to cast on the route path", () => {
         () => {
           route.cast("id1", Number);
-        }.should.throw("Parameter not found in the route path.");
+        }.should.throw("Parameter id1 not found in the route path.");
       });
     });
   });

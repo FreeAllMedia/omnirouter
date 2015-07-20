@@ -549,20 +549,24 @@ describe("Router(...options)", () => {
 		});
 
 		describe("(casting)", () => {
-			let route,
-				path,
+			let path,
 				url,
-				callback;
+				callback,
+				receivedRequest;
 
 			before(done => {
 				router = new Router();
 				callback = sinon.spy((request, response) => {
+					console.log("spy callback");
+					receivedRequest = request;
 					response.end();
 				});
-				path = "/chained-spock";
+				path = "/spock/:id";
 				url = `${host}${path}`;
-				route = router.delete(path);
-				route.then(callback);
+				router
+					.get(path)
+					.cast("id", Number)
+					.then(callback);
 				router.listen(portNumber, done);
 			});
 
@@ -571,14 +575,12 @@ describe("Router(...options)", () => {
 			});
 
 			it("should allow to cast a parameter as a number", done => {
-				route.cast("id").then((request) => {
-					request.params.id.should.be.instanceOf(Number);
-					done();
-				});
-
 				HttpRequest.get
-					.url(url)
-					.results(() => {});
+					.url(`${host}/spock/1`)
+					.results(() => {
+						(typeof receivedRequest.params.id).should.equal("number");
+						done();
+					});
 			});
 		});
 	});

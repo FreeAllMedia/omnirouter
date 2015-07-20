@@ -541,20 +541,21 @@ describe("Router(...options)", function () {
 		});
 
 		describe("(casting)", function () {
-			var route = undefined,
-			    path = undefined,
+			var path = undefined,
 			    url = undefined,
-			    callback = undefined;
+			    callback = undefined,
+			    receivedRequest = undefined;
 
 			before(function (done) {
 				router = new _libRouterJs2["default"]();
 				callback = sinon.spy(function (request, response) {
+					console.log("spy callback");
+					receivedRequest = request;
 					response.end();
 				});
-				path = "/chained-spock";
+				path = "/spock/:id";
 				url = "" + host + path;
-				route = router["delete"](path);
-				route.then(callback);
+				router.get(path).cast("id", Number).then(callback);
 				router.listen(portNumber, done);
 			});
 
@@ -563,12 +564,10 @@ describe("Router(...options)", function () {
 			});
 
 			it("should allow to cast a parameter as a number", function (done) {
-				route.cast("id").then(function (request) {
-					request.params.id.should.be.instanceOf(Number);
+				_appeal2["default"].get.url(host + "/spock/1").results(function () {
+					(typeof receivedRequest.params.id).should.equal("number");
 					done();
 				});
-
-				_appeal2["default"].get.url(url).results(function () {});
 			});
 		});
 	});
