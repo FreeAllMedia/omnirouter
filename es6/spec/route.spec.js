@@ -37,7 +37,7 @@ describe("Route", () => {
     });
   });
 
-  describe("(before and after filters)", () => {
+  describe("(before filters)", () => {
 		let logRequestSpy,
 			route,
 			callbackSpy,
