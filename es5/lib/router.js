@@ -4,30 +4,27 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _events = require("events");
+var _express = require("express");
 
-var _events2 = _interopRequireDefault(_events);
+var _express2 = _interopRequireDefault(_express);
+
+var _bodyParser = require("body-parser");
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _routeJs = require("./route.js");
+
+var _routeJs2 = _interopRequireDefault(_routeJs);
 
 var _responseJs = require("./response.js");
 
 var _responseJs2 = _interopRequireDefault(_responseJs);
-
-var _upcast = require("upcast");
-
-var _upcast2 = _interopRequireDefault(_upcast);
-
-var express = require("express");
-var bodyParser = require("body-parser");
 
 var _createRequest = Symbol(),
     _createResponse = Symbol(),
@@ -44,7 +41,7 @@ var Router = (function () {
 		Object.defineProperties(this, {
 			"_express": {
 				enumerable: false,
-				value: express()
+				value: (0, _express2["default"])()
 			},
 			"_options": {
 				enumerable: false,
@@ -64,7 +61,7 @@ var Router = (function () {
 		this._express.disable("x-powered-by");
 		//TYPE is not working by somehow, despites the website says it does
 		//https://github.com/expressjs/body-parser
-		this._express.use(bodyParser.json({ type: "application/vnd.api+json" }));
+		this._express.use(_bodyParser2["default"].json({ type: "application/vnd.api+json" }));
 
 		this.initialize.apply(this, routerOptions);
 	}
@@ -100,10 +97,10 @@ var Router = (function () {
 		value: function value(method, path) {
 			var _this = this;
 
-			var route = new Route(method, path, this);
-			route.on("callback", function (routeCallback) {
+			var route = new _routeJs2["default"](method, path, this);
+			route.on("callback", function () {
 				_this._express[method](path, function (expressRequest, expressResponse) {
-					routeCallback(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
+					return route.handle(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
 				});
 			});
 
@@ -196,60 +193,3 @@ var Request = (function () {
 })();
 
 exports.Request = Request;
-
-var Route = (function (_EventEmitter) {
-	function Route(type, path, router) {
-		_classCallCheck(this, Route);
-
-		_get(Object.getPrototypeOf(Route.prototype), "constructor", this).call(this);
-		this.setMaxListeners(0);
-		Object.defineProperties(this, {
-			"type": { value: type },
-			"path": { value: path },
-			"router": { value: router },
-			"_casts": { value: [] },
-			"callback": { value: null, writable: true }
-		});
-	}
-
-	_inherits(Route, _EventEmitter);
-
-	_createClass(Route, [{
-		key: "cast",
-		value: function cast(parameterName, parameterType) {
-			//TODO parameterName validation with path
-			if (this.path.indexOf(":" + parameterName) < 0) {
-				throw new Error("Parameter " + parameterName + " not found in the route path.");
-			}
-			this._casts.push({ name: parameterName, type: parameterType });
-			return this;
-		}
-	}, {
-		key: "then",
-		value: function then(callback) {
-			var _this2 = this;
-
-			var castCallback = function castCallback(request, response) {
-				//TODO iterate casts and cast on the request
-				_this2._casts.forEach(function (cast) {
-					if (request && request.params[cast.name]) {
-						var type = "string";
-						switch (cast.type) {
-							case Number:
-								type = "number";
-								break;
-						}
-						request.params[cast.name] = _upcast2["default"].to(request.params[cast.name], type);
-					}
-				});
-				return callback(request, response);
-			};
-			this.callback = castCallback;
-			this.emit("callback", this.callback);
-		}
-	}]);
-
-	return Route;
-})(_events2["default"]);
-
-exports.Route = Route;
