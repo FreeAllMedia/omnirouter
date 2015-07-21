@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 import EventEmitter from "events";
 
 import Response from "./response.js";
+import upcast from "upcast";
 
 const _createRequest = Symbol(),
 	_createResponse = Symbol(),
@@ -58,7 +59,7 @@ export default class Router {
 	}
 
 	[_defineExpressRoute](method, path) {
-		const route = new Route(path, this);
+		const route = new Route(method, path, this);
 		route.on("callback", (routeCallback) => {
 			this._express[method](path, (expressRequest, expressResponse) => {
 				routeCallback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
@@ -144,12 +145,38 @@ export class Route extends EventEmitter {
 			{
 				"type": {value: type},
 				"path": {value: path},
-				"router": {value: router}
+				"router": {value: router},
+				"_casts": {value: []},
+				"callback": {value: null, writable: true}
 			});
 	}
 
+	cast(parameterName, parameterType) {
+		//TODO parameterName validation with path
+		if(this.path.indexOf(`:${parameterName}`) < 0) {
+			throw new Error(`Parameter ${parameterName} not found in the route path.`);
+		}
+		this._casts.push({name: parameterName, type: parameterType});
+		return this;
+	}
+
 	then(callback) {
-		Object.defineProperty(this, "callback", {value: callback});
+		let castCallback = (request, response) => {
+			//TODO iterate casts and cast on the request
+			this._casts.forEach((cast) => {
+				if(request && request.params[cast.name]) {
+					let type = "string";
+					switch(cast.type) {
+						case Number:
+							type = "number";
+							break;
+					}
+					request.params[cast.name] = upcast.to(request.params[cast.name], type);
+				}
+			});
+			return callback(request, response);
+		};
+		this.callback = castCallback;
 		this.emit("callback", this.callback);
 	}
 }

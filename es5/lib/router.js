@@ -22,6 +22,10 @@ var _responseJs = require("./response.js");
 
 var _responseJs2 = _interopRequireDefault(_responseJs);
 
+var _upcast = require("upcast");
+
+var _upcast2 = _interopRequireDefault(_upcast);
+
 var express = require("express");
 var bodyParser = require("body-parser");
 
@@ -96,7 +100,7 @@ var Router = (function () {
 		value: function value(method, path) {
 			var _this = this;
 
-			var route = new Route(path, this);
+			var route = new Route(method, path, this);
 			route.on("callback", function (routeCallback) {
 				_this._express[method](path, function (expressRequest, expressResponse) {
 					routeCallback(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
@@ -202,16 +206,45 @@ var Route = (function (_EventEmitter) {
 		Object.defineProperties(this, {
 			"type": { value: type },
 			"path": { value: path },
-			"router": { value: router }
+			"router": { value: router },
+			"_casts": { value: [] },
+			"callback": { value: null, writable: true }
 		});
 	}
 
 	_inherits(Route, _EventEmitter);
 
 	_createClass(Route, [{
+		key: "cast",
+		value: function cast(parameterName, parameterType) {
+			//TODO parameterName validation with path
+			if (this.path.indexOf(":" + parameterName) < 0) {
+				throw new Error("Parameter " + parameterName + " not found in the route path.");
+			}
+			this._casts.push({ name: parameterName, type: parameterType });
+			return this;
+		}
+	}, {
 		key: "then",
 		value: function then(callback) {
-			Object.defineProperty(this, "callback", { value: callback });
+			var _this2 = this;
+
+			var castCallback = function castCallback(request, response) {
+				//TODO iterate casts and cast on the request
+				_this2._casts.forEach(function (cast) {
+					if (request && request.params[cast.name]) {
+						var type = "string";
+						switch (cast.type) {
+							case Number:
+								type = "number";
+								break;
+						}
+						request.params[cast.name] = _upcast2["default"].to(request.params[cast.name], type);
+					}
+				});
+				return callback(request, response);
+			};
+			this.callback = castCallback;
 			this.emit("callback", this.callback);
 		}
 	}]);

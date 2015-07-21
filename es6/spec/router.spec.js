@@ -547,6 +547,42 @@ describe("Router(...options)", () => {
 					});
 			});
 		});
+
+		describe("(casting)", () => {
+			let path,
+				url,
+				callback,
+				receivedRequest;
+
+			before(done => {
+				router = new Router();
+				callback = sinon.spy((request, response) => {
+					console.log("spy callback");
+					receivedRequest = request;
+					response.end();
+				});
+				path = "/spock/:id";
+				url = `${host}${path}`;
+				router
+					.get(path)
+					.cast("id", Number)
+					.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(done => {
+				router.close(done);
+			});
+
+			it("should allow to cast a parameter as a number", done => {
+				HttpRequest.get
+					.url(`${host}/spock/1`)
+					.results(() => {
+						(typeof receivedRequest.params.id).should.equal("number");
+						done();
+					});
+			});
+		});
 	});
 
 	describe("(middleware)", () => {
