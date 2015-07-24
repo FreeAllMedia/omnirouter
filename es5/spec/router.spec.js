@@ -10,9 +10,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
+var _sinon = require("sinon");
+
+var _sinon2 = _interopRequireDefault(_sinon);
+
 var _libRouterJs = require("../lib/router.js");
 
 var _libRouterJs2 = _interopRequireDefault(_libRouterJs);
+
+var _libRouteJs = require("../lib/route.js");
+
+var _libRouteJs2 = _interopRequireDefault(_libRouteJs);
 
 var _libResponseJs = require("../lib/response.js");
 
@@ -25,8 +33,6 @@ var _appeal2 = _interopRequireDefault(_appeal);
 var _jsonapiFormatter = require("jsonapi-formatter");
 
 var _jsonapiFormatter2 = _interopRequireDefault(_jsonapiFormatter);
-
-var sinon = require("sinon");
 
 describe("Router(...options)", function () {
 	var router = undefined,
@@ -78,7 +84,7 @@ describe("Router(...options)", function () {
 		})(_libRouterJs2["default"]);
 
 		beforeEach(function () {
-			initializeSpy = sinon.spy();
+			initializeSpy = _sinon2["default"].spy();
 		});
 
 		it("should be called after instantiation", function () {
@@ -170,7 +176,7 @@ describe("Router(...options)", function () {
 			path = "/spock";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 				response.end();
 			});
 
@@ -223,7 +229,7 @@ describe("Router(...options)", function () {
 			path = "/spork";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 
 				response.end();
 			});
@@ -270,7 +276,7 @@ describe("Router(...options)", function () {
 			path = "/spork";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 
 				response.end();
 			});
@@ -317,7 +323,7 @@ describe("Router(...options)", function () {
 			path = "/spork";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 
 				response.end();
 			});
@@ -364,7 +370,7 @@ describe("Router(...options)", function () {
 			path = "/spock";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 				response.end();
 			});
 
@@ -412,7 +418,7 @@ describe("Router(...options)", function () {
 
 			before(function (done) {
 				router = new _libRouterJs2["default"]();
-				callback = sinon.spy(function (request, response) {
+				callback = _sinon2["default"].spy(function (request, response) {
 					response.end();
 				});
 				path = "/chained-spock";
@@ -427,7 +433,7 @@ describe("Router(...options)", function () {
 			});
 
 			it("should return a Route instance", function () {
-				route.should.be.instanceOf(_libRouterJs.Route);
+				route.should.be.instanceOf(_libRouteJs2["default"]);
 			});
 
 			it("should callback", function (done) {
@@ -446,7 +452,7 @@ describe("Router(...options)", function () {
 
 			before(function (done) {
 				router = new _libRouterJs2["default"]();
-				callback = sinon.spy(function (request, response) {
+				callback = _sinon2["default"].spy(function (request, response) {
 					response.end();
 				});
 				path = "/chained-spock";
@@ -461,7 +467,7 @@ describe("Router(...options)", function () {
 			});
 
 			it("should return a Route instance", function () {
-				route.should.be.instanceOf(_libRouterJs.Route);
+				route.should.be.instanceOf(_libRouteJs2["default"]);
 			});
 
 			it("should callback", function (done) {
@@ -480,7 +486,7 @@ describe("Router(...options)", function () {
 
 			before(function (done) {
 				router = new _libRouterJs2["default"]();
-				callback = sinon.spy(function (request, response) {
+				callback = _sinon2["default"].spy(function (request, response) {
 					response.end();
 				});
 				path = "/chained-spock";
@@ -495,7 +501,7 @@ describe("Router(...options)", function () {
 			});
 
 			it("should return a Route instance", function () {
-				route.should.be.instanceOf(_libRouterJs.Route);
+				route.should.be.instanceOf(_libRouteJs2["default"]);
 			});
 
 			it("should callback", function (done) {
@@ -514,7 +520,7 @@ describe("Router(...options)", function () {
 
 			before(function (done) {
 				router = new _libRouterJs2["default"]();
-				callback = sinon.spy(function (request, response) {
+				callback = _sinon2["default"].spy(function (request, response) {
 					response.end();
 				});
 				path = "/chained-spock";
@@ -529,7 +535,7 @@ describe("Router(...options)", function () {
 			});
 
 			it("should return a Route instance", function () {
-				route.should.be.instanceOf(_libRouterJs.Route);
+				route.should.be.instanceOf(_libRouteJs2["default"]);
 			});
 
 			it("should callback", function (done) {
@@ -548,8 +554,7 @@ describe("Router(...options)", function () {
 
 			before(function (done) {
 				router = new _libRouterJs2["default"]();
-				callback = sinon.spy(function (request, response) {
-					console.log("spy callback");
+				callback = _sinon2["default"].spy(function (request, response) {
 					receivedRequest = request;
 					response.end();
 				});

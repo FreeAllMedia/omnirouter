@@ -1,6 +1,7 @@
-let sinon = require("sinon");
+import sinon from "sinon";
 
-import Router, {Request, Route} from "../lib/router.js";
+import Router, {Request} from "../lib/router.js";
+import Route from "../lib/route.js";
 import Response from "../lib/response.js";
 
 import HttpRequest from "appeal";
@@ -557,7 +558,6 @@ describe("Router(...options)", () => {
 			before(done => {
 				router = new Router();
 				callback = sinon.spy((request, response) => {
-					console.log("spy callback");
 					receivedRequest = request;
 					response.end();
 				});
