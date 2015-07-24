@@ -3,13 +3,13 @@ import flowsync from "flowsync";
 import upcast from "upcast";
 
 const setupFilters = Symbol("setupFilters"),
-    setupDynamicProperties = Symbol("setupDynamicProperties"),
-    actionNames = Symbol("actionNames"),
-    setupFilterProcessor = Symbol("setupFilterProcessor"),
-    processFilters = Symbol("processFilters"),
-    processBeforeFilters = Symbol("processBeforeFilters"),
-    addFilter = Symbol("addFilter"),
-    castCallback = Symbol("castCallback");
+        setupDynamicProperties = Symbol("setupDynamicProperties"),
+        actionNames = Symbol("actionNames"),
+        setupFilterProcessor = Symbol("setupFilterProcessor"),
+        processFilters = Symbol("processFilters"),
+        processBeforeFilters = Symbol("processBeforeFilters"),
+        addFilter = Symbol("addFilter"),
+        castCallback = Symbol("castCallback");
 
 export default class Route extends EventEmitter {
 	constructor(type, path, router) {
@@ -24,10 +24,10 @@ export default class Route extends EventEmitter {
 				"callback": {value: null, writable: true}
 			});
 
-    this[setupDynamicProperties]();
-    this[setupFilters]();
+        this[setupDynamicProperties]();
+        this[setupFilters]();
 
-    this.filters();
+        this.filters();
 	}
 
 	cast(parameterName, parameterType) {
@@ -39,162 +39,162 @@ export default class Route extends EventEmitter {
 		return this;
 	}
 
-  [castCallback](request, response, next) {
-    this._casts.forEach((cast) => {
-      if(request && request.params[cast.name]) {
-        let type = "string";
-        switch(cast.type) {
-          case Number:
-            type = "number";
-            break;
-        }
-        request.params[cast.name] = upcast.to(request.params[cast.name], type);
-      }
-    });
-    next();
-  }
+    [castCallback](request, response, next) {
+        this._casts.forEach((cast) => {
+            if(request && request.params[cast.name]) {
+                let type = "string";
+                switch(cast.type) {
+                    case Number:
+                        type = "number";
+                        break;
+                }
+                request.params[cast.name] = upcast.to(request.params[cast.name], type);
+            }
+        });
+        next();
+    }
 
-  filters() {
-    this.before(this[castCallback]);
-  }
+    filters() {
+        this.before(this[castCallback]);
+    }
 
 	then(callback) {
-    this.callback = callback;
+        this.callback = callback;
 		this.emit("callback", this.handle);
 	}
 
-  handle(...options) {
-    return this.callback(...options);
-  }
+    handle(...options) {
+        return this.callback(...options);
+    }
 
-  /**
-   * Set a function to be called before the specified action.
-   * @method before
-   */
-  before(...options) {
-    this[addFilter](this._filters.before, ...options);
-  }
+    /**
+     * Set a function to be called before the specified action.
+     * @method before
+     */
+    before(...options) {
+        this[addFilter](this._filters.before, ...options);
+    }
 
-  skip(...options) {
-    let filterToAvoid,
-      actionsToAvoid;
+    skip(...options) {
+        let filterToAvoid,
+            actionsToAvoid;
 
-    actionsToAvoid = [];
-    filterToAvoid = options[0];
+        actionsToAvoid = [];
+        filterToAvoid = options[0];
 
-    this._filters.before.forEach(
-      (filterDetails) => {
-        if(filterDetails.filter === filterToAvoid && actionsToAvoid.length === 0) {
-          filterDetails.skip = true;
-        } else {
-          actionsToAvoid.forEach(
-            (actionToAvoid) => {
-              if(filterDetails.filter === filterToAvoid
-                && filterDetails.action === actionToAvoid) {
-                filterDetails.skip = true;
-              }
+        this._filters.before.forEach(
+            (filterDetails) => {
+                if(filterDetails.filter === filterToAvoid && actionsToAvoid.length === 0) {
+                    filterDetails.skip = true;
+                } else {
+                    actionsToAvoid.forEach(
+                        (actionToAvoid) => {
+                            if(filterDetails.filter === filterToAvoid
+                                && filterDetails.action === actionToAvoid) {
+                                filterDetails.skip = true;
+                            }
+                        },
+                        this
+                    );
+                }
             },
             this
-          );
-        }
-      },
-      this
-    );
-  }
+        );
+    }
 
-  /* Private Methods */
-  [addFilter](owner, ...options) {
-    const filter = options[0];
-    // Filter to run before all actions, no skip available
-    this.actionNames.forEach((actionName) => {
-      owner.push({
-        action: this[actionName],
-        filter: filter
-      });
-    }, this);
-  }
+    /* Private Methods */
+    [addFilter](owner, ...options) {
+        const filter = options[0];
+        // Filter to run before all actions, no skip available
+        this.actionNames.forEach((actionName) => {
+            owner.push({
+                action: this[actionName],
+                filter: filter
+            });
+        }, this);
+    }
 
-  [setupDynamicProperties]() {
-    Object.defineProperties(
-      this,
-      {
-        "actionNames": {
-          get: this[actionNames]
-        }
-      }
-    );
-  }
+    [setupDynamicProperties]() {
+        Object.defineProperties(
+            this,
+            {
+                "actionNames": {
+                    get: this[actionNames]
+                }
+            }
+        );
+    }
 
-  [setupFilters]() {
-    Object.defineProperties(
-      this,
-      {
-        "_filters": {
-          writable: true,
-          enumerable: false,
-          value: {
-            before: []
-          }
-        }
-      }
-    );
+    [setupFilters]() {
+        Object.defineProperties(
+            this,
+            {
+                "_filters": {
+                    writable: true,
+                    enumerable: false,
+                    value: {
+                        before: []
+                    }
+                }
+            }
+        );
 
-    this.actionNames.forEach(this[setupFilterProcessor], this);
-  }
+        this.actionNames.forEach(this[setupFilterProcessor], this);
+    }
 
-  [setupFilterProcessor](actionName) {
-    const originalAction = this[actionName];
-    const self = this;
+    [setupFilterProcessor](actionName) {
+        const originalAction = this[actionName];
+        const self = this;
 
-    this[actionName] = (request, response) => {
-      const originalEnd = response.end;
-      flowsync.series([
-        function beforeFilters(next) {
-          self[processBeforeFilters](
-            actionName,
-            request,
-            response,
-            next
-          );
-        },
-        function action(next) {
-          response.end = (...args) => {
-            originalEnd.apply(response, args);
-            next();
-          };
-          originalAction.apply(self, [request, response]);
-        }
-      ]);
-    };
+        this[actionName] = (request, response) => {
+            const originalEnd = response.end;
+            flowsync.series([
+                function beforeFilters(next) {
+                    self[processBeforeFilters](
+                        actionName,
+                        request,
+                        response,
+                        next
+                    );
+                },
+                function action(next) {
+                    response.end = (...args) => {
+                        originalEnd.apply(response, args);
+                        next();
+                    };
+                    originalAction.apply(self, [request, response]);
+                }
+            ]);
+        };
 
-  }
+    }
 
-  [processFilters](filters, request, response, callback) {
-    const self = this;
-    flowsync.eachSeries(
-      filters,
-      function processFilter(filterDetails, next) {
-        //call filter if not skipped
-        if(filterDetails.skip !== true) {
-          filterDetails.filter.apply(self, [request, response, next]);
-        } else {
-          next();
-        }
-      },
-      function finalizeFilters(errors, results) {
-        callback(errors, results);
-      }
-    );
-  }
+    [processFilters](filters, request, response, callback) {
+        const self = this;
+        flowsync.eachSeries(
+            filters,
+            function processFilter(filterDetails, next) {
+                //call filter if not skipped
+                if(filterDetails.skip !== true) {
+                    filterDetails.filter.apply(self, [request, response, next]);
+                } else {
+                    next();
+                }
+            },
+            function finalizeFilters(errors, results) {
+                callback(errors, results);
+            }
+        );
+    }
 
-  [processBeforeFilters](action, request, response, callback) {
-    const applicableFilters = this._filters.before.filter((filter) => {
-      return filter.action === this[action];
-    });
-    this[processFilters](applicableFilters, request, response, callback);
-  }
+    [processBeforeFilters](action, request, response, callback) {
+        const applicableFilters = this._filters.before.filter((filter) => {
+            return filter.action === this[action];
+        });
+        this[processFilters](applicableFilters, request, response, callback);
+    }
 
-  [actionNames]() {
-    return ["handle"];
-  }
+    [actionNames]() {
+        return ["handle"];
+    }
 }
