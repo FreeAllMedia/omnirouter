@@ -10,9 +10,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
 
+var _sinon = require("sinon");
+
+var _sinon2 = _interopRequireDefault(_sinon);
+
 var _libRouterJs = require("../lib/router.js");
 
 var _libRouterJs2 = _interopRequireDefault(_libRouterJs);
+
+var _libRouteJs = require("../lib/route.js");
+
+var _libRouteJs2 = _interopRequireDefault(_libRouteJs);
 
 var _libResponseJs = require("../lib/response.js");
 
@@ -25,8 +33,6 @@ var _appeal2 = _interopRequireDefault(_appeal);
 var _jsonapiFormatter = require("jsonapi-formatter");
 
 var _jsonapiFormatter2 = _interopRequireDefault(_jsonapiFormatter);
-
-var sinon = require("sinon");
 
 describe("Router(...options)", function () {
 	var router = undefined,
@@ -78,7 +84,7 @@ describe("Router(...options)", function () {
 		})(_libRouterJs2["default"]);
 
 		beforeEach(function () {
-			initializeSpy = sinon.spy();
+			initializeSpy = _sinon2["default"].spy();
 		});
 
 		it("should be called after instantiation", function () {
@@ -170,7 +176,7 @@ describe("Router(...options)", function () {
 			path = "/spock";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 				response.end();
 			});
 
@@ -223,7 +229,7 @@ describe("Router(...options)", function () {
 			path = "/spork";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 
 				response.end();
 			});
@@ -270,7 +276,7 @@ describe("Router(...options)", function () {
 			path = "/spork";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 
 				response.end();
 			});
@@ -317,7 +323,7 @@ describe("Router(...options)", function () {
 			path = "/spork";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 
 				response.end();
 			});
@@ -364,7 +370,7 @@ describe("Router(...options)", function () {
 			path = "/spock";
 			url = "" + host + path;
 
-			callback = sinon.spy(function (request, response) {
+			callback = _sinon2["default"].spy(function (request, response) {
 				response.end();
 			});
 
@@ -399,6 +405,174 @@ describe("Router(...options)", function () {
 			_appeal2["default"].get.url(url).results(function (error, response) {
 				callback.firstCall.args[1].should.be.instanceOf(_libResponseJs2["default"]);
 				done();
+			});
+		});
+	});
+
+	describe("(chaining)", function () {
+		describe(".get", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = _sinon2["default"].spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router.get(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouteJs2["default"]);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"].get.url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe(".post", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = _sinon2["default"].spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router.post(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouteJs2["default"]);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"].post.url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe(".put", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = _sinon2["default"].spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router.put(path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouteJs2["default"]);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"].put.url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe(".delete", function () {
+			var route = undefined,
+			    path = undefined,
+			    url = undefined,
+			    callback = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = _sinon2["default"].spy(function (request, response) {
+					response.end();
+				});
+				path = "/chained-spock";
+				url = "" + host + path;
+				route = router["delete"](path);
+				route.then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should return a Route instance", function () {
+				route.should.be.instanceOf(_libRouteJs2["default"]);
+			});
+
+			it("should callback", function (done) {
+				_appeal2["default"]["delete"].url(url).results(function () {
+					callback.called.should.be["true"];
+					done();
+				});
+			});
+		});
+
+		describe("(casting)", function () {
+			var path = undefined,
+			    url = undefined,
+			    callback = undefined,
+			    receivedRequest = undefined;
+
+			before(function (done) {
+				router = new _libRouterJs2["default"]();
+				callback = _sinon2["default"].spy(function (request, response) {
+					receivedRequest = request;
+					response.end();
+				});
+				path = "/spock/:id";
+				url = "" + host + path;
+				router.get(path).cast("id", Number).then(callback);
+				router.listen(portNumber, done);
+			});
+
+			after(function (done) {
+				router.close(done);
+			});
+
+			it("should allow to cast a parameter as a number", function (done) {
+				_appeal2["default"].get.url(host + "/spock/1").results(function () {
+					(typeof receivedRequest.params.id).should.equal("number");
+					done();
+				});
 			});
 		});
 	});

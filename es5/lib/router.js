@@ -10,15 +10,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var _express = require("express");
+
+var _express2 = _interopRequireDefault(_express);
+
+var _bodyParser = require("body-parser");
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _routeJs = require("./route.js");
+
+var _routeJs2 = _interopRequireDefault(_routeJs);
+
 var _responseJs = require("./response.js");
 
 var _responseJs2 = _interopRequireDefault(_responseJs);
 
-var express = require("express");
-var bodyParser = require("body-parser");
-
 var _createRequest = Symbol(),
-    _createResponse = Symbol();
+    _createResponse = Symbol(),
+    _defineExpressRoute = Symbol();
 
 var Router = (function () {
 	function Router() {
@@ -31,7 +41,7 @@ var Router = (function () {
 		Object.defineProperties(this, {
 			"_express": {
 				enumerable: false,
-				value: express()
+				value: (0, _express2["default"])()
 			},
 			"_options": {
 				enumerable: false,
@@ -51,7 +61,7 @@ var Router = (function () {
 		this._express.disable("x-powered-by");
 		//TYPE is not working by somehow, despites the website says it does
 		//https://github.com/expressjs/body-parser
-		this._express.use(bodyParser.json({ type: "application/vnd.api+json" }));
+		this._express.use(_bodyParser2["default"].json({ type: "application/vnd.api+json" }));
 
 		this.initialize.apply(this, routerOptions);
 	}
@@ -83,40 +93,58 @@ var Router = (function () {
 			return new _responseJs2["default"](expressResponse, this._middlewares);
 		}
 	}, {
-		key: "get",
-		value: function get(path, callback) {
+		key: _defineExpressRoute,
+		value: function value(method, path) {
 			var _this = this;
 
-			this._express.get(path, function (expressRequest, expressResponse) {
-				callback(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
+			var route = new _routeJs2["default"](method, path, this);
+			route.on("callback", function () {
+				_this._express[method](path, function (expressRequest, expressResponse) {
+					return route.handle(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
+				});
 			});
+
+			return route;
+		}
+	}, {
+		key: "get",
+		value: function get(path, callback) {
+			var route = this[_defineExpressRoute]("get", path);
+
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "post",
 		value: function post(path, callback) {
-			var _this2 = this;
+			var route = this[_defineExpressRoute]("post", path);
 
-			this._express.post(path, function (expressRequest, expressResponse) {
-				callback(_this2[_createRequest](expressRequest), _this2[_createResponse](expressResponse));
-			});
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "put",
 		value: function put(path, callback) {
-			var _this3 = this;
+			var route = this[_defineExpressRoute]("put", path);
 
-			this._express.put(path, function (expressRequest, expressResponse) {
-				callback(_this3[_createRequest](expressRequest), _this3[_createResponse](expressResponse));
-			});
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "delete",
 		value: function _delete(path, callback) {
-			var _this4 = this;
+			var route = this[_defineExpressRoute]("delete", path);
 
-			this._express["delete"](path, function (expressRequest, expressResponse) {
-				callback(_this4[_createRequest](expressRequest), _this4[_createResponse](expressResponse));
-			});
+			if (callback !== undefined) {
+				route.then(callback);
+			}
+			return route;
 		}
 	}, {
 		key: "use",

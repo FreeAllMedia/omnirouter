@@ -1,10 +1,12 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+import express from "express";
+import bodyParser from "body-parser";
+import Route from "./route.js";
 
 import Response from "./response.js";
 
 const _createRequest = Symbol(),
-	_createResponse = Symbol();
+	_createResponse = Symbol(),
+	_defineExpressRoute = Symbol();
 
 export default class Router {
 	constructor(...routerOptions) {
@@ -55,28 +57,51 @@ export default class Router {
 		return new Response(expressResponse, this._middlewares);
 	}
 
-	get(path, callback) {
-		this._express.get(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
+	[_defineExpressRoute](method, path) {
+		const route = new Route(method, path, this);
+		route.on("callback", () => {
+			this._express[method](path, (expressRequest, expressResponse) => {
+				return route.handle(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
+			});
 		});
+
+		return route;
+	}
+
+	get(path, callback) {
+		const route = this[_defineExpressRoute]("get", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	post(path, callback) {
-		this._express.post(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
-		});
+		const route = this[_defineExpressRoute]("post", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	put(path, callback) {
-		this._express.put(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
-		});
+		const route = this[_defineExpressRoute]("put", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	delete(path, callback) {
-		this._express.delete(path, (expressRequest, expressResponse) => {
-			callback(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
-		});
+		const route = this[_defineExpressRoute]("delete", path);
+
+		if(callback !== undefined) {
+			route.then(callback);
+		}
+		return route;
 	}
 
 	use(middlewareClass) {
@@ -110,4 +135,3 @@ export class Request {
 		return this._request.get(headerName);
 	}
 }
-

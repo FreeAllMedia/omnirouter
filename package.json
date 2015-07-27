@@ -1,6 +1,6 @@
 {
   "name": "omnirouter",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "ES6 Component for message routing.",
   "main": "index.js",
   "scripts": {
@@ -36,13 +36,17 @@
   "dependencies": {
     "body-parser": "^1.13.1",
     "express": "^4.13.0",
-    "jsonapi-formatter": "^0.1.0"
+    "flowsync": "^0.1.6",
+    "jsonapi-formatter": "^0.1.0",
+    "upcast": "^1.0.4"
   },
   "devDependencies": {
     "appeal": "0.0.0",
     "babel": "^5.5.6",
+    "babel-eslint": "^3.1.23",
     "chai": "^3.0.0",
     "coveralls": "^2.11.2",
+    "eslint": "^1.0.0-rc-1",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-istanbul": "^0.10.0",
@@ -54,6 +58,6 @@
     "karma-mocha": "^0.1.10",
     "karma-sauce-launcher": "^0.2.11",
     "mocha": "^2.2.5",
-    "sinon": "^1.15.3"
+    "sinon": "^1.15.4"
   }
 }
