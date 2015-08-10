@@ -58,31 +58,13 @@ let configOptions = {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    singleRun: true
 };
 
 /**
  * Special Options For SauceLabs
  */
-if (process.env.SAUCE_USERNAME) {
-    /**
-     * If SauceLabs credentials are available,
-     * set up the tests to run through them.
-     */
-    configOptions.sauceLabs = {
-        testName: "Omnirouter.js"
-    };
-    const customLaunchers = require("./.sauce.json").platforms;
-    configOptions.customLaunchers = customLaunchers;
-    configOptions.browsers = Object.keys(customLaunchers);
-    reporters.push("saucelabs");
-} else {
-    /**
-     * If there are no SauceLabs credentials available,
-     * detect the browsers that we *can* use.
-     */
-    frameworks.push("detectBrowsers");
-}
+frameworks.push("detectBrowsers");
 
 module.exports = function(config) {
     // level of logging

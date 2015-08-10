@@ -52,7 +52,7 @@ describe("Route", function () {
 		});
 	});
 
-	describe("(before and after filters)", function () {
+	describe("(before filters)", function () {
 		var logRequestSpy = undefined,
 		    route = undefined,
 		    callbackSpy = undefined,
