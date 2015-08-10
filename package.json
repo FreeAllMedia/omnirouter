@@ -1,6 +1,6 @@
 {
   "name": "omnirouter",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "ES6 Component for message routing.",
   "main": "index.js",
   "scripts": {
