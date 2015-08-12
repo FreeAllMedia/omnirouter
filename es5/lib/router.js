@@ -22,6 +22,10 @@ var _routeJs = require("./route.js");
 
 var _routeJs2 = _interopRequireDefault(_routeJs);
 
+var _incognito = require("incognito");
+
+var _incognito2 = _interopRequireDefault(_incognito);
+
 var _responseJs = require("./response.js");
 
 var _responseJs2 = _interopRequireDefault(_responseJs);
@@ -34,34 +38,21 @@ var Router = (function () {
 	function Router() {
 		_classCallCheck(this, Router);
 
+		var _ = (0, _incognito2["default"])(this);
+		_._express = (0, _express2["default"])();
+
 		for (var _len = arguments.length, routerOptions = Array(_len), _key = 0; _key < _len; _key++) {
 			routerOptions[_key] = arguments[_key];
 		}
 
-		Object.defineProperties(this, {
-			"_express": {
-				enumerable: false,
-				value: (0, _express2["default"])()
-			},
-			"_options": {
-				enumerable: false,
-				value: routerOptions
-			},
-			"_server": {
-				writable: true,
-				enumerable: false,
-				value: undefined
-			},
-			"_middlewares": {
-				enumerable: false,
-				value: []
-			}
-		});
+		_._options = routerOptions;
+		_._server = undefined;
+		_._middlewares = [];
 
-		this._express.disable("x-powered-by");
+		_._express.disable("x-powered-by");
 		//TYPE is not working by somehow, despites the website says it does
 		//https://github.com/expressjs/body-parser
-		this._express.use(_bodyParser2["default"].json({ type: "application/vnd.api+json" }));
+		_._express.use(_bodyParser2["default"].json({ type: "application/vnd.api+json" }));
 
 		this.initialize.apply(this, routerOptions);
 	}
@@ -74,12 +65,13 @@ var Router = (function () {
 		// Stubbed
 
 		value: function listen(portNumber, callback) {
-			this._server = this._express.listen(portNumber, callback);
+			var _ = (0, _incognito2["default"])(this);
+			_._server = _._express.listen(portNumber, callback);
 		}
 	}, {
 		key: "close",
 		value: function close(callback) {
-			this._server.close(callback);
+			(0, _incognito2["default"])(this)._server.close(callback);
 		}
 	}, {
 		key: _createRequest,
@@ -90,7 +82,7 @@ var Router = (function () {
 		key: _createResponse,
 		value: function value(expressResponse) {
 			//propagates the middleware to response formatters
-			return new _responseJs2["default"](expressResponse, this._middlewares);
+			return new _responseJs2["default"](expressResponse, (0, _incognito2["default"])(this)._middlewares);
 		}
 	}, {
 		key: _defineExpressRoute,
@@ -99,7 +91,7 @@ var Router = (function () {
 
 			var route = new _routeJs2["default"](method, path, this);
 			route.on("callback", function () {
-				_this._express[method](path, function (expressRequest, expressResponse) {
+				(0, _incognito2["default"])(_this)._express[method](path, function (expressRequest, expressResponse) {
 					return route.handle(_this[_createRequest](expressRequest), _this[_createResponse](expressResponse));
 				});
 			});
@@ -149,7 +141,7 @@ var Router = (function () {
 	}, {
 		key: "use",
 		value: function use(middlewareClass) {
-			this._middlewares.push(Object.create(middlewareClass.prototype));
+			(0, _incognito2["default"])(this)._middlewares.push(Object.create(middlewareClass.prototype));
 		}
 	}]);
 
@@ -162,11 +154,9 @@ var Request = (function () {
 	function Request(expressRequest) {
 		_classCallCheck(this, Request);
 
+		var _ = (0, _incognito2["default"])(this);
+		_._request = expressRequest;
 		Object.defineProperties(this, {
-			"_request": {
-				enumerable: false,
-				value: expressRequest
-			},
 			"body": {
 				enumerable: true,
 				value: expressRequest.body
@@ -185,7 +175,7 @@ var Request = (function () {
 	_createClass(Request, [{
 		key: "header",
 		value: function header(headerName) {
-			return this._request.get(headerName);
+			return (0, _incognito2["default"])(this)._request.get(headerName);
 		}
 	}]);
 

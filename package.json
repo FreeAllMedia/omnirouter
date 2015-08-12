@@ -1,6 +1,6 @@
 {
   "name": "omnirouter",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "ES6 Component for message routing.",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "body-parser": "^1.13.1",
     "express": "^4.13.0",
     "flowsync": "^0.1.6",
+    "incognito": "^0.1.2",
     "jsonapi-formatter": "^0.1.0",
     "upcast": "^1.0.4"
   },
