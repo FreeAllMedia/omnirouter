@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import Route from "./route.js";
+import privateData from "incognito";
 
 import Response from "./response.js";
 
@@ -10,30 +11,16 @@ const _createRequest = Symbol(),
 
 export default class Router {
 	constructor(...routerOptions) {
-		Object.defineProperties(this, {
-			"_express": {
-				enumerable: false,
-				value: express()
-			},
-			"_options": {
-				enumerable: false,
-				value: routerOptions
-			},
-			"_server": {
-				writable: true,
-				enumerable: false,
-				value: undefined
-			},
-			"_middlewares": {
-				enumerable: false,
-				value: []
-			}
-		});
+		const _ = privateData(this);
+		_._express = express();
+		_._options = routerOptions;
+		_._server = undefined;
+		_._middlewares = [];
 
-		this._express.disable("x-powered-by");
+		_._express.disable("x-powered-by");
 		//TYPE is not working by somehow, despites the website says it does
 		//https://github.com/expressjs/body-parser
-		this._express.use(bodyParser.json({ type: "application/vnd.api+json" }));
+		_._express.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 		this.initialize(...routerOptions);
 	}
@@ -41,11 +28,12 @@ export default class Router {
 	initialize() {} // Stubbed
 
 	listen(portNumber, callback) {
-		this._server = this._express.listen(portNumber, callback);
+		const _ = privateData(this);
+		_._server = _._express.listen(portNumber, callback);
 	}
 
 	close(callback) {
-		this._server.close(callback);
+		privateData(this)._server.close(callback);
 	}
 
 	[_createRequest](expressRequest) {
@@ -54,13 +42,13 @@ export default class Router {
 
 	[_createResponse](expressResponse) {
 		//propagates the middleware to response formatters
-		return new Response(expressResponse, this._middlewares);
+		return new Response(expressResponse, privateData(this)._middlewares);
 	}
 
 	[_defineExpressRoute](method, path) {
 		const route = new Route(method, path, this);
 		route.on("callback", () => {
-			this._express[method](path, (expressRequest, expressResponse) => {
+			privateData(this)._express[method](path, (expressRequest, expressResponse) => {
 				return route.handle(this[_createRequest](expressRequest), this[_createResponse](expressResponse));
 			});
 		});
@@ -105,17 +93,15 @@ export default class Router {
 	}
 
 	use(middlewareClass) {
-		this._middlewares.push(Object.create(middlewareClass.prototype));
+		privateData(this)._middlewares.push(Object.create(middlewareClass.prototype));
 	}
 }
 
 export class Request {
 	constructor(expressRequest) {
+		const _ = privateData(this);
+		_._request = expressRequest;
 		Object.defineProperties(this, {
-			"_request": {
-				enumerable: false,
-				value: expressRequest
-			},
 			"body": {
 				enumerable: true,
 				value: expressRequest.body
@@ -132,6 +118,6 @@ export class Request {
 	}
 
 	header(headerName) {
-		return this._request.get(headerName);
+		return privateData(this)._request.get(headerName);
 	}
 }

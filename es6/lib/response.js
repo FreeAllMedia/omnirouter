@@ -1,28 +1,24 @@
+import privateData from "incognito";
+
 const loadDynamicMethods = Symbol();
 
 export default class Response {
 	constructor(expressResponse, middlewares) {
-		Object.defineProperties(this, {
-			"_response": {
-				enumerable: false,
-				value: expressResponse
-			},
-			"_middlewares": {
-				enumerable: false,
-				value: middlewares
-			}
-		});
+		const _ = privateData(this);
+		_._response = expressResponse;
+		_._middlewares = middlewares;
 
 		this[loadDynamicMethods]();
 	}
 
 	[loadDynamicMethods]() {
+		const _ = privateData(this);
 		const statuses = require("../../http.statuses.json");
 		if(Array.isArray(statuses)) {
 			statuses.forEach((status) => {
 				this[status.name] = (data) => {
 					//call hook for data format middleware in a pipeline
-					this._middlewares.forEach((middleware) => {
+					_._middlewares.forEach((middleware) => {
 						if(middleware.formatResponse && typeof middleware.formatResponse === "function" ) {
 							middleware.formatResponse(this);
 						}
@@ -39,31 +35,31 @@ export default class Response {
 	}
 
 	end(message) {
-		this._response.end(message);
+		privateData(this)._response.end(message);
 	}
 
 	status(code) {
-		this._response.status(code);
+		privateData(this)._response.status(code);
 		return this;
 	}
 
 	json(data) {
-		this._response.json(data);
+		privateData(this)._response.json(data);
 	}
 
 	send(data) {
-		this._response.send(data);
+		privateData(this)._response.send(data);
 	}
 
 	download(data) {
-		this._response.download(data);
+		privateData(this)._response.download(data);
 	}
 
 	set(key, value) {
-		this._response.set(key, value);
+		privateData(this)._response.set(key, value);
 	}
 
 	get(key) {
-		return this._response.get(key);
+		return privateData(this)._response.get(key);
 	}
 }
