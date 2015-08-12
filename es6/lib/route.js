@@ -1,6 +1,7 @@
 import EventEmitter from "events";
 import flowsync from "flowsync";
 import upcast from "upcast";
+import privateData from "incognito";
 
 const setupFilters = Symbol("setupFilters"),
         setupDynamicProperties = Symbol("setupDynamicProperties"),
@@ -15,19 +16,22 @@ export default class Route extends EventEmitter {
 	constructor(type, path, router) {
 		super();
 		this.setMaxListeners(0);
+    const _ = privateData(this);
+    _._casts = [];
+
 		Object.defineProperties(this,
 			{
 				"type": {value: type},
 				"path": {value: path},
 				"router": {value: router},
-				"_casts": {value: []},
 				"callback": {value: null, writable: true}
-			});
+			}
+    );
 
-        this[setupDynamicProperties]();
-        this[setupFilters]();
+    this[setupDynamicProperties]();
+    this[setupFilters]();
 
-        this.filters();
+    this.filters();
 	}
 
 	cast(parameterName, parameterType) {
@@ -35,12 +39,12 @@ export default class Route extends EventEmitter {
 		if(this.path.indexOf(`:${parameterName}`) < 0) {
 			throw new Error(`Parameter ${parameterName} not found in the route path.`);
 		}
-		this._casts.push({name: parameterName, type: parameterType});
+		privateData(this)._casts.push({name: parameterName, type: parameterType});
 		return this;
 	}
 
     [castCallback](request, response, next) {
-        this._casts.forEach((cast) => {
+        privateData(this)._casts.forEach((cast) => {
             if(request && request.params[cast.name]) {
                 let type = "string";
                 switch(cast.type) {
@@ -59,12 +63,12 @@ export default class Route extends EventEmitter {
     }
 
 	then(callback) {
-        this.callback = callback;
+    this.callback = callback;
 		this.emit("callback", this.handle);
 	}
 
     handle(...options) {
-        return this.callback(...options);
+      return this.callback(...options);
     }
 
     /**

@@ -26,6 +26,10 @@ var _upcast = require("upcast");
 
 var _upcast2 = _interopRequireDefault(_upcast);
 
+var _incognito = require("incognito");
+
+var _incognito2 = _interopRequireDefault(_incognito);
+
 var setupFilters = Symbol("setupFilters"),
     setupDynamicProperties = Symbol("setupDynamicProperties"),
     actionNames = Symbol("actionNames"),
@@ -41,11 +45,13 @@ var Route = (function (_EventEmitter) {
 
         _get(Object.getPrototypeOf(Route.prototype), "constructor", this).call(this);
         this.setMaxListeners(0);
+        var _ = (0, _incognito2["default"])(this);
+        _._casts = [];
+
         Object.defineProperties(this, {
             "type": { value: type },
             "path": { value: path },
             "router": { value: router },
-            "_casts": { value: [] },
             "callback": { value: null, writable: true }
         });
 
@@ -64,13 +70,13 @@ var Route = (function (_EventEmitter) {
             if (this.path.indexOf(":" + parameterName) < 0) {
                 throw new Error("Parameter " + parameterName + " not found in the route path.");
             }
-            this._casts.push({ name: parameterName, type: parameterType });
+            (0, _incognito2["default"])(this)._casts.push({ name: parameterName, type: parameterType });
             return this;
         }
     }, {
         key: castCallback,
         value: function value(request, response, next) {
-            this._casts.forEach(function (cast) {
+            (0, _incognito2["default"])(this)._casts.forEach(function (cast) {
                 if (request && request.params[cast.name]) {
                     var type = "string";
                     switch (cast.type) {
